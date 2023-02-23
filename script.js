@@ -11,6 +11,7 @@ const Animal = {
   type: "",
   age: 0,
 };
+const settings = { filter: "all", sortBy: "name", sortDir: "asc" };
 
 function start() {
   console.log("ready");
@@ -60,19 +61,25 @@ function prepareObject(jsonObject) {
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
   console.log(`user selected ${filter}`);
-  filterList(filter);
+  //filterList(filter);
+  setFilter(filter);
 }
 
-function filterList(FilterBy) {
-  let filteredList = allAnimals;
-  if (FilterBy === "cat") {
+function setFilter(filter) {
+  settings.filterBy = filter;
+  buildList();
+}
+
+function filterList(filteredList) {
+  //let filteredList = allAnimals;
+  if (settings.filterBy === "cat") {
     //filter for cats
     filteredList = allAnimals.filter(isCat);
-  } else if (FilterBy === "dog") {
+  } else if (settings.filterBy === "dog") {
     filteredList = allAnimals.filter(isDog);
   }
 
-  displayList(filteredList);
+  return filteredList;
 }
 
 function isCat(animal) {
@@ -93,13 +100,19 @@ function selectSort(event) {
     event.target.dataset.SortDirection = "asc";
   }
   console.log(`user selected ${sortBy}`);
-  sortList(sortBy, sortDir);
+  setSort(sortBy, sortDir);
 }
 
-function sortList(sortBy, sortDir) {
-  let sortedList = allAnimals;
+function setSort(sortBy, sortDir) {
+  settings.sortBy = sortBy;
+  settings.sortDir = sortDir;
+  buildList();
+}
+
+function sortList(sortedList) {
+  //let sortedList = allAnimals;
   let direction = 1;
-  if (sortDir === "desc") {
+  if (settings.sortDir === "desc") {
     direction = -1;
   } else {
     direction = 1;
@@ -108,13 +121,19 @@ function sortList(sortBy, sortDir) {
   sortedList = sortedList.sort(sortByProperty);
 
   function sortByProperty(animalA, animalB) {
-    if (animalA[sortBy] < animalB[sortBy]) {
+    if (animalA[settings.sortBy] < animalB[settings.sortBy]) {
       return -1 * direction;
     } else {
       return 1 * direction;
     }
   }
 
+  return sortedList;
+}
+
+function buildList() {
+  const currentList = filterList(allAnimals);
+  const sortedList = sortList(currentList);
   displayList(sortedList);
 }
 
